@@ -35,6 +35,9 @@ def check_events(ai_settings, screen, stats, play_button, ship, aliens, bullets)
             check_play_button(ai_settings, screen, stats, play_button, ship, aliens, bullets, mouse_x, mouse_y)
 
 def start_game(ai_settings, screen, stats, ship, aliens, bullets):
+    # Reset the game settings.
+    ai_settings.initialize_dynamic_settings()
+
     # Hide the mouse cursor.
     pygame.mouse.set_visible(False)
 
@@ -85,15 +88,18 @@ def update_bullets(ai_settings, screen, ship, aliens, bullets):
 
     check_bullet_alien_collision(ai_settings, screen, ship, aliens, bullets)
 
-    if len(aliens) == 0:
-        # Destroy existing bullets and create new fleet.
-        bullets.empty()
-        create_fleet(ai_settings, screen, ship, aliens)
+    
 
 def check_bullet_alien_collision(ai_settings, screen, ship, aliens, bullets):
     """Respond to bullet-alien collisions."""
     # Remove any bullets and aliens that have collided.
     collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
+
+    if len(aliens) == 0:
+        # Destroy existing bullets, speed up game, and create new fleet.
+        bullets.empty()
+        ai_settings.increase_speed()
+        create_fleet(ai_settings, screen, ship, aliens)
 
 def fire_bullet(ai_settings, screen, ship, bullets):
     """Fire a bullet if limit not reached yet."""
