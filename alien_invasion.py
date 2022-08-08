@@ -15,7 +15,8 @@ def run_game():
         (ai_settings.screen_width, ai_settings.screen_height))
     pygame.display.set_caption("Alien Invasion")
 
-    play_button = Button(ai_settings, screen, "Play")
+    start_button = Button(screen, "images/button.bmp","START", 80, 1)
+    restart_button = Button(screen, "images/wide_button.bmp","RESTART", 80, 1)
     # Create an instance to store game statistics and create a scoreboard.
     stats = GameStats(ai_settings)
     sb = Scoreboard(ai_settings, screen, stats)
@@ -30,6 +31,11 @@ def run_game():
 
     # Start the main loop for the game.
     while True:
+        if stats.first_game:
+            play_button = start_button
+        else:
+            play_button = restart_button
+
         gf.check_events(ai_settings, screen, stats, play_button, ship, aliens, bullets)
             
         if stats.game_active:
