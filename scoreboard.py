@@ -11,14 +11,15 @@ class Scoreboard():
         self.stats = stats
         # Font settings for scoring information.
         self.text_color = (50,50,50)
-        self.font = pygame.font.SysFont(None, 48)
+        self.font = pygame.font.Font("fonts/back-to-1982.regular.ttf", 30)
 
         # Prepare the initial score image.
         self.prep_score()
 
     def prep_score(self):
         """Turn the score into a rendered image."""
-        score_str = str(self.stats.score)
+        rounded_score = int(round(self.stats.score, -1))
+        score_str = "{:,}".format(rounded_score)
         self.score_image = self.font.render(score_str, True, self.text_color,
         self.ai_settings.bg_color)
         # Display the score at the top right of the screen.

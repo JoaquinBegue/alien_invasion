@@ -3,25 +3,27 @@ class Settings():
 
     def __init__(self):
         """Initialize the game's static settings."""
-        # Screen settings
+        # Screen settings.
         self.screen_width = 1600
         self.screen_height = 900
         self.bg_color = (0, 0, 0)
 
-        # Ship settings
+        # Ship settings.
         self.ship_limit = 3
 
-        # Bullet settings
+        # Bullet settings.
         self.bullet_width = 3
         self.bullet_height = 15
         self.bullet_color = 200, 200, 0
         self.bullets_allowed = 3
 
-        # Alien settings
-        self.fleet_drop_speed = 100
+        # Alien settings.
+        self.fleet_drop_speed = 30
 
         # How quickly the game speeds up.
         self.speedup_scale = 1.1
+        # How quickly the alien point values increase.
+        self.score_scale = 1.5
 
         self.initialize_dynamic_settings()
         
@@ -39,7 +41,9 @@ class Settings():
         self.alien_points = 50
 
     def increase_speed(self):
-        """Increase speed settings."""
+        """Increase speed settings and alien point values."""
         self.ship_speed_factor *= self.speedup_scale
         self.bullet_speed_factor *= self.speedup_scale
         self.alien_speed_factor *= self.speedup_scale
+        
+        self.alien_points = int(self.alien_points * self.score_scale)
