@@ -36,13 +36,17 @@ def run_game():
         else:
             play_button = restart_button
 
-        gf.check_events(ai_settings, screen, stats, play_button, ship, aliens, bullets)
+        gf.check_events(ai_settings, screen, stats, sb, play_button, ship, aliens, bullets)
             
         if stats.game_active:
             ship.update()
             gf.update_bullets(ai_settings, screen, stats, sb, ship, aliens, bullets)
-            gf.update_aliens(ai_settings, stats, screen, ship, aliens, bullets)
+            gf.update_aliens(ai_settings, stats, screen, sb, ship, aliens, bullets)
 
         gf.update_screen(ai_settings, screen, stats, sb, ship, aliens, bullets, play_button)
 
 run_game()
+
+# to do: change the scoreboard color to light grey; downsize the ships at the scoreboard; downsize the level and score, to both together fit like high score
+
+# commit msg: added displaying of high score, level and ships left.
