@@ -1,5 +1,6 @@
+from logging import exception
 import sys, pygame
-from os import open
+from io import open
 from bullet import Bullet
 from alien import Alien
 from time import sleep
@@ -63,6 +64,7 @@ def check_keydown_events(event, ai_settings, screen, stats, ship, aliens, bullet
     elif event.key == pygame.K_SPACE:
         fire_bullet(ai_settings, screen, ship, bullets)
     elif event.key == pygame.K_q:
+        save_high_score(stats)
         sys.exit()
     elif event.key == pygame.K_p:
         start_game(ai_settings, screen, stats, ship, aliens, bullets)
@@ -77,6 +79,7 @@ def check_keyup_events(event, ship):
 def check_events(ai_settings, screen, stats, sb, play_button, ship, aliens, bullets):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            save_high_score(stats)
             sys.exit()
         elif event.type == pygame.KEYDOWN:
             check_keydown_events(event, ai_settings, screen, stats, ship, aliens, bullets)
@@ -181,21 +184,9 @@ def check_high_scores(stats, sb):
         stats.high_score = stats.score
         sb.prep_high_score()
 
-def load_high_score(stats):
-    try:        
-        file = open("high_scores.txt", "r")
-        file_content = file.read()
-        if len(file_content) > 0:
-            stats.high_score = file_content
-        else:
-            raise Exception
-    except:
-        print("High score loading error: Corrupt or empty file.\n")
-
 def save_high_score(stats):
-    file = open("high_scores.txt", "w")
-    file.write(stats.high_score)
-
+    with open("high_scores.txt", "w") as file:
+        file.write(str(stats.high_score))
     
 
 # Alien fleet's functions.
@@ -211,7 +202,6 @@ def get_number_rows(ai_settings, sb, ship_height, alien_height):
     available_space_y = (ai_settings.screen_height - (5 * alien_height) - 
                             ship_height - sb.bgr_height)
     number_rows = int(available_space_y / (2 * alien_height))
-    print(number_rows)
     return number_rows
 
 def create_alien(ai_settings, screen, sb, aliens, alien_number, row_number):
