@@ -21,8 +21,6 @@ class Button():
         self.msg_image = self.font.render(text, True, self.text_color, (255, 41, 41))
         self.msg_image_rect = self.msg_image.get_rect()
         self.msg_image_rect.center = self.rect.center
-        print(self.msg_image_rect.width)
-
         
     def blitme(self):
         self.screen.blit(self.image, self.rect)
