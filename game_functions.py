@@ -55,7 +55,7 @@ def update_aliens(ai_settings, stats, screen, sb, ship, aliens, bullets):
 
 # Player interactive functions.
 
-def check_keydown_events(event, ai_settings, screen, stats, ship, aliens, bullets):
+def check_keydown_events(event, ai_settings, screen, stats, sb, ship, aliens, bullets):
     """Respond to keypresses."""
     if event.key == pygame.K_RIGHT:
         ship.moving_right = True
@@ -67,7 +67,8 @@ def check_keydown_events(event, ai_settings, screen, stats, ship, aliens, bullet
         save_high_score(stats)
         sys.exit()
     elif event.key == pygame.K_p:
-        start_game(ai_settings, screen, stats, ship, aliens, bullets)
+        if not stats.game_active:
+            start_game(ai_settings, screen, stats, sb, ship, aliens, bullets)
         
 def check_keyup_events(event, ship):
     """Respond to key releases."""
@@ -82,7 +83,7 @@ def check_events(ai_settings, screen, stats, sb, play_button, ship, aliens, bull
             save_high_score(stats)
             sys.exit()
         elif event.type == pygame.KEYDOWN:
-            check_keydown_events(event, ai_settings, screen, stats, ship, aliens, bullets)
+            check_keydown_events(event, ai_settings, screen, stats, sb, ship, aliens, bullets)
         elif event.type == pygame.KEYUP:
             check_keyup_events(event, ship)
         elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -95,6 +96,7 @@ def fire_bullet(ai_settings, screen, ship, bullets):
     if len(bullets) < ai_settings.bullets_allowed:
         new_bullet = Bullet(ai_settings, screen, ship)
         bullets.add(new_bullet)
+
 
 # Object interaction functions.
 
@@ -109,16 +111,19 @@ def check_bullet_alien_collision(ai_settings, screen, stats, sb, ship, aliens, b
             sb.prep_score()
         check_high_scores(stats, sb)
 
+    # If the entire fleet is destroyed start a new level.
     if len(aliens) == 0:
-        # If the entire fleet is destroyed start a new level.
-        bullets.empty()
-        ai_settings.increase_speed()
-
-        # Increase level.
-        stats.level += 1
-        sb.prep_level()
-
+        start_new_level(ai_settings, stats, sb, bullets)
         create_fleet(ai_settings, screen, sb, ship, aliens)
+
+def start_new_level(ai_settings, stats, sb, bullets):
+    """Remove existing bullets and increase game speed."""
+    bullets.empty()
+    ai_settings.increase_speed()
+
+    # Increase level.
+    stats.level += 1
+    sb.prep_level()
 
 def ship_hit(ai_settings, stats, screen, sb, ship, aliens, bullets):
     """Respond to ship being hit by alien."""
@@ -129,15 +134,11 @@ def ship_hit(ai_settings, stats, screen, sb, ship, aliens, bullets):
         # Update scoreboard.
         sb.prep_ships()
 
-        # Empty the list of aliens and bullets.
-        aliens.empty()
-        bullets.empty()
-        # Create a new fleet and center the ship.
-        create_fleet(ai_settings, screen, sb, ship, aliens)
-        ship.center_ship()
+        # Reset game objects.
+        reset_objects(ai_settings, screen, sb, ship, aliens, bullets)
+
         # Pause.
-        sleep(0.5)
-    
+        sleep(0.5)    
     else:
         stats.game_active = False
         stats.first_game = False
@@ -158,11 +159,13 @@ def start_game(ai_settings, screen, stats, sb, ship, aliens, bullets):
     stats.game_active = True
 
     # Reset the scoreboard images.
-    sb.prep_score()
-    sb.prep_high_score()
-    sb.prep_level()
-    sb.prep_ships()
+    sb.prep_images()
 
+    # Reset game objects.
+    reset_objects(ai_settings, screen, sb, ship, aliens, bullets)
+
+def reset_objects(ai_settings, screen, sb, ship, aliens, bullets):
+    """Reset the game objects at it's initial states."""
     # Empty the list of aliens and bullets.
     aliens.empty()
     bullets.empty()

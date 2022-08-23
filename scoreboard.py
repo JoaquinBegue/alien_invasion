@@ -16,7 +16,11 @@ class Scoreboard():
         self.font = pygame.font.Font("fonts/back-to-1982.regular.ttf", 30)
         self.large_font = pygame.font.Font("fonts/back-to-1982.regular.ttf", 60)
 
-        # Prepare the initial score, high score and level images.
+        # Prepare the scoreboard's images.
+        self.prep_images()
+
+    def prep_images(self):
+        """Calls to each prepare method."""
         self.prep_background_rect()
         self.prep_score()
         self.prep_high_score()
