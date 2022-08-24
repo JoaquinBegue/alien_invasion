@@ -1,12 +1,16 @@
-"""14-5. Refactoring: Look for functions and methods that are doing more
-than one task, and refactor them to keep your code organized and efficient.
-For example, move some of the code in check_bullet_alien_collisions(),
-which starts a new level when the fleet of aliens has been destroyed,
-to a function called start_new_level(). Also, move the four separate
-method calls in the __init__() method in Scoreboard to a method called
-prep_images() to shorten __init__(). The prep_images() method could also
-help check_play_button() or start_game() if you’ve already refactored
-check_play_button()."""
+"""14-6. Expanding Alien Invasion: Think of a way to expand Alien Invasion. For
+example, you could program the aliens to shoot bullets down at the ship or
+add shields for your ship to hide behind, which can be destroyed by bullets
+from either side. Or use something like the pygame.mixer module to add sound
+effects like explosions and shooting sounds.
+actual sounds volume values:
+respawn =  1.0
+play_button =  1.0
+background =  0.9921875
+bullet =  1.0
+explosion =  1.0
+ship_hit =  1.0
+"""
 
 import pygame
 from pygame.sprite import Group
@@ -15,6 +19,7 @@ from ship import Ship
 from game_stats import GameStats
 from button import Button
 from scoreboard import Scoreboard
+from pygame.mixer import music
 import game_functions as gf
 
 def run_game():
@@ -24,6 +29,9 @@ def run_game():
     screen = pygame.display.set_mode(
         (ai_settings.screen_width, ai_settings.screen_height))
     pygame.display.set_caption("Alien Invasion")
+
+    music.load("sounds/background.wav")
+    background_playing = False
 
     start_button = Button(screen, "images/button.bmp","START", 80, 1)
     restart_button = Button(screen, "images/wide_button.bmp","RESTART", 80, 1)
@@ -49,6 +57,13 @@ def run_game():
         gf.check_events(ai_settings, screen, stats, sb, play_button, ship, aliens, bullets)
             
         if stats.game_active:
+            if not background_playing:
+                music.set_volume(0.5)
+                music.play(-1)
+                
+                background_playing = True
+
+            # Display the game objects.
             ship.update()
             gf.update_bullets(ai_settings, screen, stats, sb, ship, aliens, bullets)
             gf.update_aliens(ai_settings, stats, screen, sb, ship, aliens, bullets)

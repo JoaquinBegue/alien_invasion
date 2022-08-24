@@ -4,6 +4,7 @@ from io import open
 from bullet import Bullet
 from alien import Alien
 from time import sleep
+from pygame.mixer import Sound
 
 # Display functions.
 
@@ -96,6 +97,9 @@ def fire_bullet(ai_settings, screen, ship, bullets):
     if len(bullets) < ai_settings.bullets_allowed:
         new_bullet = Bullet(ai_settings, screen, ship)
         bullets.add(new_bullet)
+        bullet_sound = Sound("sounds/bullet.wav")
+        bullet_sound.set_volume(0.5)
+        bullet_sound.play()
 
 
 # Object interaction functions.
@@ -109,6 +113,9 @@ def check_bullet_alien_collision(ai_settings, screen, stats, sb, ship, aliens, b
         for aliens in collisions.values():
             stats.score += ai_settings.alien_points * len(aliens)
             sb.prep_score()
+            explosion_sound = Sound("sounds/explosion.wav")
+            explosion_sound.set_volume(0.35)
+            explosion_sound.play()
         check_high_scores(stats, sb)
 
     # If the entire fleet is destroyed start a new level.
@@ -125,20 +132,27 @@ def start_new_level(ai_settings, stats, sb, bullets):
     stats.level += 1
     sb.prep_level()
 
+    new_level_sound = Sound("sounds/new_level.wav")
+    new_level_sound.play()
+    sleep(0.75)
+
 def ship_hit(ai_settings, stats, screen, sb, ship, aliens, bullets):
     """Respond to ship being hit by alien."""
-    if stats.ships_left > 0:  
+    if stats.ships_left > 0:
+        ship_hit_sound = Sound("sounds/ship_hit.wav")
+        ship_hit_sound.set_volume(0.75)
+        ship_hit_sound.play()
         # Decrement ships_left.
         stats.ships_left -= 1
 
         # Update scoreboard.
         sb.prep_ships()
 
+        # Pause.
+        sleep(0.5)
+
         # Reset game objects.
         reset_objects(ai_settings, screen, sb, ship, aliens, bullets)
-
-        # Pause.
-        sleep(0.5)    
     else:
         stats.game_active = False
         stats.first_game = False
@@ -180,6 +194,9 @@ def check_play_button(ai_settings, screen, stats, sb, play_button, ship, aliens,
     button_clicked = play_button.rect.collidepoint(mouse_x, mouse_y)
     if button_clicked and not stats.game_active:
         start_game(ai_settings, screen, stats, sb, ship, aliens, bullets)
+        play_button_sound = Sound("sounds/play_button.wav")
+        play_button_sound.set_volume(0.5)
+        play_button_sound.play()
 
 def check_high_scores(stats, sb):
     """Check to see if there's a new high score."""

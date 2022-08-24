@@ -1,5 +1,7 @@
 import pygame
 from pygame.sprite import Sprite
+from time import sleep
+from pygame.mixer import Sound
 
 class Ship(Sprite):
     def __init__(self, ai_settings, screen, image_path):
@@ -42,3 +44,14 @@ class Ship(Sprite):
     def center_ship(self):
         """Center the ship on the screen."""
         self.center = self.screen_rect.centerx
+        respawn_sound = Sound("sounds/ship_respawn.wav")
+        respawn_sound.set_volume(0.5)
+        respawn_sound.play()
+
+    def blink(self): # Work in progress
+        for n in range(3):
+            self.rect.y = self.ai_settings.screen_height
+            self.y = self.rect.y
+            sleep(0.25)
+            self.rect.bottom = self.screen_rect.bottom
+            self.y = self.rect.bottom + self.rect.height
